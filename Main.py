@@ -19,6 +19,8 @@ part = 0
 jumped = 0
 still_goin = 0
 opposite_team_pieces = black_pieces
+part1 = 0
+part2 = 0
 
 
 def move(re1, re2, item):
@@ -27,33 +29,50 @@ def move(re1, re2, item):
     global possible_moves
     global jumped
     global opposite_team_pieces
+    global part1
+    global part2
+    global part
     if turn == '1':
+        part1 = 0
         dist = white_pieces[item]
+        # This part is for jumping over a black player
         if abs(dist[0] - re1) == 100:
-            jumped = 1
             pygame.display.set_caption("Red's turn")
+            # This is where it keeps it our turn and tells that we've jumped over someone
             turn = '1'
+            jumped = 1
+            # This is where is deletes the jumped player
             replace = black_pieces.index((re1 + (dist[0] - re1)/2, re2 + (dist[1] - re2)/2))
             black_pieces.remove(black_pieces[replace])
-            print(jumped)
+            current_piece = [(), (), (), "1"]
+
+            # This is where it moves the player
             white_pieces[item] = re1, re2
+            opposite_team_pieces = black_pieces
+
+        #     Notice: I didn't reset the current_player, this is because we want to keep are player's turn going
         else:
+            pygame.display.set_caption("Black's turn")
+
+            # This is for moving 1 space at the beginning of ur turn
             if jumped == 0:
+                # This is saying that we didn't jump over someone and that its the black's turn
                 jumped = 0
                 turn = '-1'
+                # Making it so that there is no piece selected to move
                 current_piece = [(), (), (), ""]
-                pygame.display.set_caption("Black's turn")
                 white_pieces[item] = re1, re2
 
+            # This is for moving when 1 space after jumping, so u can't move 1 space :P
             else:
                 jumped = 0
                 turn = '-1'
                 current_piece = [(), (), (), ""]
                 pygame.display.set_caption("Black's turn")
-                print("problem")
-        opposite_team_pieces = white_pieces
+            opposite_team_pieces = white_pieces
 
     elif turn == '-1':
+        part2 = 0
         dist = black_pieces[item]
         if abs(dist[0] - re1) == 100:
             jumped = 1
@@ -61,8 +80,10 @@ def move(re1, re2, item):
             turn = '-1'
             replace = white_pieces.index((re1 + (dist[0] - re1) / 2, re2 + (dist[1] - re2) / 2))
             white_pieces.remove(white_pieces[replace])
-            print(jumped)
             black_pieces[item] = re1, re2
+            current_piece = [(), (), (), "-1"]
+            opposite_team_pieces = white_pieces
+
         else:
             if jumped == 0:
                 jumped = 0
@@ -76,44 +97,83 @@ def move(re1, re2, item):
                 turn = '1'
                 current_piece = [(), (), (), ""]
                 pygame.display.set_caption("Red's turn")
-        opposite_team_pieces = black_pieces
+            opposite_team_pieces = black_pieces
+        part = 0
 
 
 def can_move(place, moves):
     global part
-    part = 0
+    global part1
+    global part2
+    if moves == '1':
+        part = part1
+    else:
+        part = part2
 
     if current_piece.__contains__((place[0] + 50, place[1] + 50)):
         possible_moves[part] = place
         part += 1
+        # if not possible_moves.__contains__(place):
+        #     possible_moves[part] = place
+        #     part += 1
+
     elif opposite_team_pieces.__contains__((place[0] + 50, place[1] + 50)):
         if current_piece.__contains__((place[0] + 100, place[1] + 100)):
             possible_moves[part] = place
             part += 1
+            # if not possible_moves.__contains__(place):
+            #     possible_moves[part] = place
+            #     part += 1
 
     if current_piece.__contains__((place[0] - 50, place[1] + 50)):
         possible_moves[part] = place
         part += 1
+        # if not possible_moves.__contains__(place):
+        #     possible_moves[part] = place
+        #     part += 1
+
     elif opposite_team_pieces.__contains__((place[0] - 50, place[1] + 50)):
         if current_piece.__contains__((place[0] - 100, place[1] + 100)):
             possible_moves[part] = place
             part += 1
+            # if not possible_moves.__contains__(place):
+            #     possible_moves[part] = place
+            #     part += 1
 
     if current_piece.__contains__((place[0] - 50, place[1] - 50)):
         possible_moves[part] = place
         part += 1
+        # if not possible_moves.__contains__(place):
+        #     possible_moves[part] = place
+        #     part += 1
+
     elif opposite_team_pieces.__contains__((place[0] - 50, place[1] - 50)):
         if current_piece.__contains__((place[0] - 100, place[1] - 100)):
             possible_moves[part] = place
             part += 1
+            # if not possible_moves.__contains__(place):
+            #     possible_moves[part] = place
+            #     part += 1
 
     if current_piece.__contains__((int(place[0]) + 50, place[1] - 50)):
         possible_moves[part] = place
         part += 1
+        # if not possible_moves.__contains__(place):
+        #     possible_moves[part] = place
+        #     part += 1
+
     elif opposite_team_pieces.__contains__((int(place[0]) + 50, place[1] - 50)):
         if current_piece.__contains__((int(place[0]) + 100, place[1] - 100)):
+            # if not possible_moves.__contains__(place):
+            #     possible_moves[part] = place
+            #     part += 1
             possible_moves[part] = place
             part += 1
+
+    if moves == '1':
+        part1 = part
+    elif moves == '-1':
+        part2 = part
 
 
 piece_movement = [(0, 1),
@@ -126,18 +186,30 @@ piece_movement = [(0, 1),
 
 def screen_draw(w, h, re=0, repeat=0, repeat2=0):
     global part
-    part = 0
     global current_piece
+    global part1
+    global part2
+    part = 0
+    part1 = 0
+    part2 = 0
 
     while repeat < w:
         while repeat2 < h:
             if white_pieces.__contains__((repeat, repeat2)):
-                pygame.draw.rect(WIN, (250, 50, 50), (repeat + 50, repeat2 + 50, 45, 45))
+                if current_piece[1] == (repeat, repeat2):
+                    pygame.draw.rect(WIN, (250, 80, 80), (repeat + 50, repeat2 + 50, 45, 45))
+                else:
+                    pygame.draw.rect(WIN, (250, 50, 50), (repeat + 50, repeat2 + 50, 45, 45))
+
                 if (50 * round(int(mx - 25)/50)) == repeat + 50 and (50 * round(int(my - 25)/50)) == repeat2 + 50:
                     if click[0] and turn == '1':
                         current_piece = white_pieces.index((repeat, repeat2)), (repeat, repeat2)
             elif black_pieces.__contains__((repeat, repeat2)):
-                pygame.draw.rect(WIN, (30, 30, 30), (repeat + 50, repeat2 + 50, 45, 45))
+                if current_piece[1] == (repeat, repeat2):
+                    pygame.draw.rect(WIN, (20, 20, 20), (repeat + 50, repeat2 + 50, 45, 45))
+                else:
+                    pygame.draw.rect(WIN, (30, 30, 30), (repeat + 50, repeat2 + 50, 45, 45))
+
                 if (50 * round(int(mx - 25)/50)) == repeat + 50 and (50 * round(int(my - 25)/50)) == repeat2 + 50:
                     if click[0] and turn == '-1':
                         current_piece = black_pieces.index((repeat, repeat2)), (repeat, repeat2)
@@ -145,16 +217,19 @@ def screen_draw(w, h, re=0, repeat=0, repeat2=0):
             else:
                 if (50 * round(int(mx - 25)/50)) == repeat + 50 and (50 * round(int(my - 25)/50)) == repeat2 + 50:
                     can_move((repeat, repeat2), turn)
-                    pygame.draw.rect(WIN, (100, 150, 100), (repeat + 50, repeat2 + 50, 45, 45))
+                    pygame.draw.rect(WIN, (100, 100, 100), (repeat + 50, repeat2 + 50, 45, 45))
                     if click[0]:
                         if possible_moves.__contains__((repeat, repeat2)) and current_piece[0] != ():
-                            print(current_piece)
                             move(repeat, repeat2, current_piece[0])
                 else:
                     if repeat % 20 == repeat2 % 20:
                         pygame.draw.rect(WIN, (110, 110, 110), (repeat + 50, repeat2 + 50, 45, 45))
                     else:
-                        pygame.draw.rect(WIN, (70, 70, 70), (repeat + 50, repeat2 + 50, 45, 45))
+                        if possible_moves.__contains__((repeat, repeat2)):
+                            pygame.draw.rect(WIN, (90, 90, 90), (repeat + 50, repeat2 + 50, 45, 45))
+                        else:
+                            pygame.draw.rect(WIN, (70, 70, 70), (repeat + 50, repeat2 + 50, 45, 45))
+
                         ground.append((repeat, repeat2))
                         can_move((repeat, repeat2), turn)
 
@@ -171,7 +246,6 @@ def screen_draw(w, h, re=0, repeat=0, repeat2=0):
 
 
 while run:
-    # dist_move(current_piece, possible_moves)
     pygame.time.delay(10)
     keys = pygame.key.get_pressed()
     WIN.fill((10, 10, 10))
@@ -180,10 +254,8 @@ while run:
     screen_draw(scrnw - 100, scrnh - 100)
     pygame.display.update()
     ground = []
-
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        if event.type == pygame.QUIT or len(black_pieces) == 0 or len(white_pieces) == 0:
             run = False
             break
-
 pygame.quit()
