@@ -19,8 +19,11 @@ part = 0
 jumped = 0
 still_goin = 0
 opposite_team_pieces = black_pieces
+current_team = white_pieces
 part1 = 0
 part2 = 0
+imbedded_list = []
+force_end_turn = 0
 
 
 def move(re1, re2, item):
@@ -32,6 +35,7 @@ def move(re1, re2, item):
     global part1
     global part2
     global part
+    global current_team
     if turn == '1':
         part1 = 0
         dist = white_pieces[item]
@@ -49,6 +53,7 @@ def move(re1, re2, item):
             # This is where it moves the player
             white_pieces[item] = re1, re2
             opposite_team_pieces = black_pieces
+            current_team = white_pieces
 
         #     Notice: I didn't reset the current_player, this is because we want to keep are player's turn going
         else:
@@ -70,6 +75,7 @@ def move(re1, re2, item):
                 current_piece = [(), (), (), ""]
                 pygame.display.set_caption("Black's turn")
             opposite_team_pieces = white_pieces
+            current_team = black_pieces
 
     elif turn == '-1':
         part2 = 0
@@ -83,6 +89,7 @@ def move(re1, re2, item):
             black_pieces[item] = re1, re2
             current_piece = [(), (), (), "-1"]
             opposite_team_pieces = white_pieces
+            current_team = black_pieces
 
         else:
             if jumped == 0:
@@ -98,6 +105,7 @@ def move(re1, re2, item):
                 current_piece = [(), (), (), ""]
                 pygame.display.set_caption("Red's turn")
             opposite_team_pieces = black_pieces
+            current_team = white_pieces
         part = 0
 
 
@@ -245,6 +253,42 @@ def screen_draw(w, h, re=0, repeat=0, repeat2=0):
             possible_moves[part] = ()
 
 
+def no_more_moves(possible, current):
+    global turn
+    global imbedded_list
+    global force_end_turn
+    global opposite_team_pieces
+    global jumped
+    global imbedded_list
+    global current_team
+    global current_piece
+
+    # This is computing whether u can move anymore after jumping someone
+    if jumped >= 5:
+        for i in possible:
+            imbedded_list = current[1]
+            if imbedded_list != () and i != ():
+                # This is calculating the distance between u and the possible moves,
+                # so if it = 100 then that means u can go again.
+                if abs(int(imbedded_list[0]) - int(i[0])) == 100:
+                    force_end_turn = 1
+        # If it doesn't find any that = 100 then u can't go again
+        if force_end_turn == 0:
+            jumped = 0
+            if opposite_team_pieces == white_pieces:
+                opposite_team_pieces = black_pieces
+                current_team = white_pieces
+                pygame.display.set_caption("Red's turn")
+                turn = '1'
+                current_piece = [(), (), (), '1']
+            elif opposite_team_pieces == black_pieces:
+                opposite_team_pieces = white_pieces
+                current_team = black_pieces
+                pygame.display.set_caption("Black's turn")
+                turn = '-1'
+                current_piece = [(), (), (), '-1']
+
+
 while run:
     pygame.time.delay(10)
     keys = pygame.key.get_pressed()
@@ -254,6 +298,11 @@ while run:
     screen_draw(scrnw - 100, scrnh - 100)
     pygame.display.update()
     ground = []
+    if jumped > 0:
+        jumped += 1
+
+    no_more_moves(possible_moves, current_piece)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT or len(black_pieces) == 0 or len(white_pieces) == 0:
             run = False
