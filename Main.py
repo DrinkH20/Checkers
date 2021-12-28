@@ -121,60 +121,36 @@ def can_move(place, moves):
     if current_piece.__contains__((place[0] + 50, place[1] + 50)):
         possible_moves[part] = place
         part += 1
-        # if not possible_moves.__contains__(place):
-        #     possible_moves[part] = place
-        #     part += 1
 
     elif opposite_team_pieces.__contains__((place[0] + 50, place[1] + 50)):
         if current_piece.__contains__((place[0] + 100, place[1] + 100)):
             possible_moves[part] = place
             part += 1
-            # if not possible_moves.__contains__(place):
-            #     possible_moves[part] = place
-            #     part += 1
 
     if current_piece.__contains__((place[0] - 50, place[1] + 50)):
         possible_moves[part] = place
         part += 1
-        # if not possible_moves.__contains__(place):
-        #     possible_moves[part] = place
-        #     part += 1
 
     elif opposite_team_pieces.__contains__((place[0] - 50, place[1] + 50)):
         if current_piece.__contains__((place[0] - 100, place[1] + 100)):
             possible_moves[part] = place
             part += 1
-            # if not possible_moves.__contains__(place):
-            #     possible_moves[part] = place
-            #     part += 1
 
     if current_piece.__contains__((place[0] - 50, place[1] - 50)):
         possible_moves[part] = place
         part += 1
-        # if not possible_moves.__contains__(place):
-        #     possible_moves[part] = place
-        #     part += 1
 
     elif opposite_team_pieces.__contains__((place[0] - 50, place[1] - 50)):
         if current_piece.__contains__((place[0] - 100, place[1] - 100)):
             possible_moves[part] = place
             part += 1
-            # if not possible_moves.__contains__(place):
-            #     possible_moves[part] = place
-            #     part += 1
 
     if current_piece.__contains__((int(place[0]) + 50, place[1] - 50)):
         possible_moves[part] = place
         part += 1
-        # if not possible_moves.__contains__(place):
-        #     possible_moves[part] = place
-        #     part += 1
 
     elif opposite_team_pieces.__contains__((int(place[0]) + 50, place[1] - 50)):
         if current_piece.__contains__((int(place[0]) + 100, place[1] - 100)):
-            # if not possible_moves.__contains__(place):
-            #     possible_moves[part] = place
-            #     part += 1
             possible_moves[part] = place
             part += 1
 
