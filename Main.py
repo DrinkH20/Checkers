@@ -6,6 +6,7 @@ pieces = []
 white_pieces = [(50, 100), (150, 100), (250, 100), (350, 100),
                 (0, 50), (100, 50), (200, 50), (300, 50),
                 (50, 0), (150, 0), (250, 0), (350, 0)]
+
 black_pieces = [(0, 250), (100, 250),  (200, 250), (300, 250),
                 (50, 300), (150, 300), (250, 300), (350, 300),
                 (0, 350), (100, 350),  (200, 350), (300, 350)]
@@ -282,8 +283,8 @@ while run:
 
     no_more_moves(possible_moves, current_piece)
 
-    # if current_piece[0:2] == [(), ()] and jumped > 10:
-    #     possible_moves = [(), (), (), ()]
+    if current_piece[0:2] == [(), ()]:
+        possible_moves = [(), (), (), ()]
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT or len(black_pieces) == 0 or len(white_pieces) == 0:
