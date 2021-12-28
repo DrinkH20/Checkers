@@ -3,9 +3,11 @@ scrnw, scrnh = 500, 500
 WIN = pygame.display.set_mode((scrnw, scrnh))
 pygame.display.set_caption("Red's turn")
 pieces = []
-white_pieces = [(0, 50), (100, 50), (200, 50), (300, 50),
+white_pieces = [(50, 100), (150, 100), (250, 100), (350, 100),
+                (0, 50), (100, 50), (200, 50), (300, 50),
                 (50, 0), (150, 0), (250, 0), (350, 0)]
-black_pieces = [(50, 300), (150, 300), (250, 300), (350, 300),
+black_pieces = [(0, 250), (100, 250),  (200, 250), (300, 250),
+                (50, 300), (150, 300), (250, 300), (350, 300),
                 (0, 350), (100, 350),  (200, 350), (300, 350)]
 Dist = 0
 mx, my = pygame.mouse.get_pos()
@@ -238,7 +240,7 @@ def no_more_moves(possible, current):
     global imbedded_list
     global current_team
     global current_piece
-
+    force_end_turn = 0
     # This is computing whether u can move anymore after jumping someone
     if jumped >= 5:
         for i in possible:
@@ -274,10 +276,14 @@ while run:
     screen_draw(scrnw - 100, scrnh - 100)
     pygame.display.update()
     ground = []
+
     if jumped > 0:
         jumped += 1
 
     no_more_moves(possible_moves, current_piece)
+
+    # if current_piece[0:2] == [(), ()] and jumped > 10:
+    #     possible_moves = [(), (), (), ()]
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT or len(black_pieces) == 0 or len(white_pieces) == 0:
