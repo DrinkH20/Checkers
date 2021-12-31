@@ -31,8 +31,9 @@ opposite_team_pieces = black_pieces
 current_team = white_pieces
 part1 = 0
 part2 = 0
-imbedded_list = []
+embedded_list = []
 force_end_turn = 0
+moved = 0
 
 
 def move(re1, re2, item):
@@ -45,6 +46,7 @@ def move(re1, re2, item):
     global part2
     global part
     global current_team
+    global moved
     if turn == '1':
         part1 = 0
         dist = white_pieces[item]
@@ -66,11 +68,13 @@ def move(re1, re2, item):
                     white_pieces[item] = re1, re2
                     opposite_team_pieces = black_pieces
                     current_team = white_pieces
+                    moved = 1
             else:
                 pygame.display.set_caption("Red's turn")
                 # This is where it keeps it our turn and tells that we've jumped over someone
                 turn = '1'
                 jumped = 1
+                moved = 1
                 # This is where is deletes the jumped player
                 replace = black_pieces.index((re1 + (dist[0] - re1) / 2, re2 + (dist[1] - re2) / 2))
                 black_pieces.remove(black_pieces[replace])
@@ -83,8 +87,6 @@ def move(re1, re2, item):
 
         #     Notice: I didn't reset the current_player, this is because we want to keep are player's turn going
         else:
-            pygame.display.set_caption("Black's turn")
-
             # This is for moving 1 space at the beginning of ur turn
             if jumped == 0:
                 if white_kings[item] == 0:
@@ -92,21 +94,26 @@ def move(re1, re2, item):
                         # This is saying that we didn't jump over someone and that its the black's turn
                         jumped = 0
                         turn = '-1'
+                        moved = 0
                         # Making it so that there is no piece selected to move
                         current_piece = [(), (), (), ""]
                         white_pieces[item] = re1, re2
+                        pygame.display.set_caption("Black's turn")
 
                 else:
                     # This is saying that we didn't jump over someone and that its the black's turn
                     jumped = 0
                     turn = '-1'
+                    moved = 0
                     # Making it so that there is no piece selected to move
                     current_piece = [(), (), (), ""]
                     white_pieces[item] = re1, re2
+                    pygame.display.set_caption("Black's turn")
 
             # This is for moving when 1 space after jumping, so u can't move 1 space :P
             else:
                 jumped = 0
+                moved = 0
                 turn = '-1'
                 current_piece = [(), (), (), ""]
                 pygame.display.set_caption("Black's turn")
@@ -131,8 +138,10 @@ def move(re1, re2, item):
                     current_piece = [(), (), (), "-1"]
                     opposite_team_pieces = white_pieces
                     current_team = black_pieces
+                    moved = 1
             else:
                 jumped = 1
+                moved = 0
                 pygame.display.set_caption("Black's turn")
                 turn = '-1'
                 replace = white_pieces.index((re1 + (dist[0] - re1) / 2, re2 + (dist[1] - re2) / 2))
@@ -278,7 +287,27 @@ def screen_draw(w, h, re=0, repeat=0, repeat2=0):
                         pygame.draw.rect(WIN, (110, 110, 110), (repeat + 50, repeat2 + 50, 45, 45))
                     else:
                         if possible_moves.__contains__((repeat, repeat2)):
-                            pygame.draw.rect(WIN, (90, 90, 90), (repeat + 50, repeat2 + 50, 45, 45))
+                            if moved > 1:
+                                if turn == '1':
+                                    dist = current_piece[1]
+                                    if dist != ():
+                                        if white_kings[white_pieces.index(dist)] == 0:
+                                            if dist[1]-repeat2 != abs(dist[1]-repeat2):
+                                                pygame.draw.rect(WIN, (90, 90, 90), (repeat + 50, repeat2 + 50, 45, 45))
+                                            else:
+                                                pygame.draw.rect(WIN, (70, 70, 70), (repeat + 50, repeat2 + 50, 45, 45))
+
+                                elif turn == '-1':
+                                    dist = current_piece[1]
+                                    if black_kings[black_pieces.index(dist)] == 0:
+                                        if dist[1]-repeat2 == abs(dist[1]-repeat2):
+                                            pygame.draw.rect(WIN, (90, 90, 90), (repeat + 50, repeat2 + 50, 45, 45))
+                                        else:
+                                            pygame.draw.rect(WIN, (70, 70, 70), (repeat + 50, repeat2 + 50, 45, 45))
+
+                            else:
+                                pygame.draw.rect(WIN, (90, 50, 80), (repeat + 50, repeat2 + 50, 45, 45))
+
                         else:
                             pygame.draw.rect(WIN, (70, 70, 70), (repeat + 50, repeat2 + 50, 45, 45))
 
@@ -299,23 +328,41 @@ def screen_draw(w, h, re=0, repeat=0, repeat2=0):
 
 def no_more_moves(possible, current):
     global turn
-    global imbedded_list
+    global embedded_list
     global force_end_turn
     global opposite_team_pieces
     global jumped
-    global imbedded_list
+    global embedded_list
     global current_team
     global current_piece
     force_end_turn = 0
     # This is computing whether u can move anymore after jumping someone
     if jumped >= 5:
         for i in possible:
-            imbedded_list = current[1]
-            if imbedded_list != () and i != ():
+            embedded_list = current[1]
+            if embedded_list != () and i != ():
                 # This is calculating the distance between u and the possible moves,
                 # so if it = 100 then that means u can go again.
-                if abs(int(imbedded_list[0]) - int(i[0])) == 100:
-                    force_end_turn = 1
+                if abs(int(embedded_list[0]) - int(i[0])) == 100:
+                    if turn == '1':
+                        dist = current_piece[1]
+                        if dist != ():
+                            if white_kings[white_pieces.index(dist)] == 0:
+                                if int(embedded_list[0] - int(i[0])) == 100:
+                                    force_end_turn = 1
+                        else:
+                            force_end_turn = 1
+
+                    elif turn == '-1':
+                        dist = current_piece[1]
+
+                        if dist != ():
+                            if black_kings[black_pieces.index(dist)] == 0:
+                                if int(embedded_list[0] - int(i[0])) == 100:
+                                    force_end_turn = 1
+                            else:
+                                force_end_turn = 1
+
         # If it doesn't find any that = 100 then u can't go again
         if force_end_turn == 0:
             jumped = 0
@@ -345,6 +392,7 @@ while run:
 
     if jumped > 0:
         jumped += 1
+    moved += 1
 
     no_more_moves(possible_moves, current_piece)
 
