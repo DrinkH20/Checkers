@@ -148,7 +148,6 @@ def move(re1, re2, item):
                     replace = black_pieces.index((re1 + (dist[0] - re1) / 2, re2 + (dist[1] - re2) / 2))
                     black_pieces.pop(replace)
                     black_kings.pop(replace)
-                    print(replace)
                     red_pieces[item] = re1, re2
                     current_piece = [(), (), (), "-1"]
                     opposite_team_pieces = black_pieces
@@ -162,7 +161,6 @@ def move(re1, re2, item):
                 replace = black_pieces.index((re1 + (dist[0] - re1) / 2, re2 + (dist[1] - re2) / 2))
                 black_pieces.pop(replace)
                 black_kings.pop(replace)
-                print(replace)
                 red_pieces[item] = re1, re2
                 current_piece = [(), (), (), "-1"]
                 opposite_team_pieces = black_pieces
@@ -413,7 +411,6 @@ while run:
 
     if jumped > 0:
         jumped += 1
-    print(jumped)
     moved += 1
 
     no_more_moves(possible_moves, current_piece)
