@@ -68,8 +68,8 @@ def move(re1, re2, item):
                     jumped = 1
                     # This is where is deletes the jumped player
                     replace = red_pieces.index((re1 + (dist[0] - re1) / 2, re2 + (dist[1] - re2) / 2))
-                    red_pieces.remove(red_pieces[replace])
-                    red_kings.remove(red_kings[replace])
+                    red_pieces.pop(replace)
+                    red_kings.pop(replace)
                     current_piece = [(), (), (), "1"]
 
                     # This is where it moves the player
@@ -86,8 +86,8 @@ def move(re1, re2, item):
 
                 # This is where is deletes the jumped player
                 replace = red_pieces.index((re1 + (dist[0] - re1) / 2, re2 + (dist[1] - re2) / 2))
-                red_pieces.remove(red_pieces[replace])
-                red_kings.remove(red_kings[replace])
+                red_pieces.pop(replace)
+                red_kings.pop(replace)
                 current_piece = [(), (), (), "1"]
 
                 # This is where it moves the player
@@ -146,8 +146,9 @@ def move(re1, re2, item):
                     pygame.display.set_caption("Red's turn")
                     turn = '-1'
                     replace = black_pieces.index((re1 + (dist[0] - re1) / 2, re2 + (dist[1] - re2) / 2))
-                    black_pieces.remove(black_pieces[replace])
-                    black_kings.remove(black_kings[replace])
+                    black_pieces.pop(replace)
+                    black_kings.pop(replace)
+                    print(replace)
                     red_pieces[item] = re1, re2
                     current_piece = [(), (), (), "-1"]
                     opposite_team_pieces = black_pieces
@@ -159,8 +160,9 @@ def move(re1, re2, item):
                 pygame.display.set_caption("Red's turn")
                 turn = '-1'
                 replace = black_pieces.index((re1 + (dist[0] - re1) / 2, re2 + (dist[1] - re2) / 2))
-                black_pieces.remove(black_pieces[replace])
-                black_kings.remove(black_kings[replace])
+                black_pieces.pop(replace)
+                black_kings.pop(replace)
+                print(replace)
                 red_pieces[item] = re1, re2
                 current_piece = [(), (), (), "-1"]
                 opposite_team_pieces = black_pieces
@@ -390,7 +392,7 @@ def no_more_moves(possible, current):
                 current_team = black_pieces
                 pygame.display.set_caption("Black's turn")
                 turn = '1'
-                current_piece = [(), (), (), '1']
+                current_piece = [(), (), (), '-1']
             elif opposite_team_pieces == red_pieces:
                 opposite_team_pieces = black_pieces
                 current_team = red_pieces
@@ -411,15 +413,20 @@ while run:
 
     if jumped > 0:
         jumped += 1
+    print(jumped)
     moved += 1
 
     no_more_moves(possible_moves, current_piece)
 
-    if current_piece[0:2] == [(), ()]:
+    if current_piece[0:1] == [()]:
         possible_moves = [(), (), (), ()]
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT or len(red_pieces) == 0 or len(black_pieces) == 0:
+            if len(red_pieces) == 0:
+                print("Black Wins!")
+            elif len(black_pieces) == 0:
+                print("Red Wins!")
             run = False
             break
 pygame.quit()
