@@ -1,6 +1,6 @@
 import pygame
 scrnw, scrnh = 500, 500
-WIN = pygame.display.set_mode((scrnw, scrnh))
+WIN = pygame.display.set_mode((scrnw, scrnh), -156)
 pygame.display.set_caption("Red's turn")
 pieces = []
 black_pieces = [(50, 100), (150, 100), (250, 100), (350, 100),
@@ -41,6 +41,7 @@ color_black_king = (150, 50, 50)
 color_red = (30, 30, 30)
 color_red_select = (20, 20, 20)
 color_red_king = (15, 15, 15)
+mouse_color = (150, 100, 100)
 
 
 def move(re1, re2, item):
@@ -107,7 +108,7 @@ def move(re1, re2, item):
                         turn = '-1'
                         moved = 0
                         # Making it so that there is no piece selected to move
-                        current_piece = [(), (), (), ""]
+                        current_piece = [(), (), (), "-1"]
                         black_pieces[item] = re1, re2
                         pygame.display.set_caption("Red's turn")
 
@@ -117,7 +118,7 @@ def move(re1, re2, item):
                     turn = '-1'
                     moved = 0
                     # Making it so that there is no piece selected to move
-                    current_piece = [(), (), (), ""]
+                    current_piece = [(), (), (), "-1"]
                     black_pieces[item] = re1, re2
                     pygame.display.set_caption("Red's turn")
 
@@ -126,7 +127,7 @@ def move(re1, re2, item):
                 jumped = 0
                 moved = 0
                 turn = '-1'
-                current_piece = [(), (), (), ""]
+                current_piece = [(), (), (), "-1"]
                 pygame.display.set_caption("Red's turn")
             opposite_team_pieces = black_pieces
             current_team = red_pieces
@@ -173,19 +174,19 @@ def move(re1, re2, item):
                         if calc == 50:
                             jumped = 0
                             turn = '1'
-                            current_piece = [(), (), (), ""]
+                            current_piece = [(), (), (), "1"]
                             pygame.display.set_caption("Black's turn")
                             red_pieces[item] = re1, re2
                     else:
                         jumped = 0
                         turn = '1'
-                        current_piece = [(), (), (), ""]
+                        current_piece = [(), (), (), "1"]
                         pygame.display.set_caption("Black's turn")
                         red_pieces[item] = re1, re2
             else:
                 jumped = 0
                 turn = '1'
-                current_piece = [(), (), (), ""]
+                current_piece = [(), (), (), "1"]
                 pygame.display.set_caption("Black's turn")
             opposite_team_pieces = red_pieces
             current_team = black_pieces
@@ -212,7 +213,6 @@ def can_move(place, moves):
         if current_piece.__contains__((place[0] + 100, place[1] + 100)):
             possible_moves[part] = place
             part += 1
-
     if current_piece.__contains__((place[0] - 50, place[1] + 50)):
         possible_moves[part] = place
         part += 1
@@ -259,6 +259,8 @@ def screen_draw(w, h, re=0, repeat=0, repeat2=0):
     global current_piece
     global part1
     global part2
+    global mouse_color
+    global possible_moves
     part = 0
     part1 = 0
     part2 = 0
@@ -282,6 +284,8 @@ def screen_draw(w, h, re=0, repeat=0, repeat2=0):
                 if (50 * round(int(mx - 25)/50)) == repeat + 50 and (50 * round(int(my - 25)/50)) == repeat2 + 50:
                     if click[0] and turn == '1':
                         current_piece = black_pieces.index((repeat, repeat2)), (repeat, repeat2)
+                        if jumped == 0:
+                            possible_moves = [(), (), (), ()]
 
             # This is for making the red pieces
             elif red_pieces.__contains__((repeat, repeat2)):
@@ -296,6 +300,8 @@ def screen_draw(w, h, re=0, repeat=0, repeat2=0):
                 if (50 * round(int(mx - 25)/50)) == repeat + 50 and (50 * round(int(my - 25)/50)) == repeat2 + 50:
                     if click[0] and turn == '-1':
                         current_piece = red_pieces.index((repeat, repeat2)), (repeat, repeat2)
+                        if jumped == 0:
+                            possible_moves = [(), (), (), ()]
 
             else:
                 if (50 * round(int(mx - 25)/50)) == repeat + 50 and (50 * round(int(my - 25)/50)) == repeat2 + 50:
@@ -340,6 +346,7 @@ def screen_draw(w, h, re=0, repeat=0, repeat2=0):
         repeat += 50
         repeat2 = 0
         re += 1
+    pygame.draw.rect(WIN, mouse_color, (mx - 5, my - 5, 10, 10))
     if part < 3:
         while part < 3:
             part += 1
@@ -408,6 +415,12 @@ while run:
     screen_draw(scrnw - 100, scrnh - 100)
     pygame.display.update()
     ground = []
+
+    print(turn)
+    if turn == '-1':
+        mouse_color = (150, 90, 90)
+    else:
+        mouse_color = (90, 90, 90)
 
     if jumped > 0:
         jumped += 1
